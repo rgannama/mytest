@@ -16,5 +16,5 @@ spec:
     spec:
       containers:
       - name: test-app
-        image: hello-world:latest
+        image: thomaspoignant/hello-world-rest-json:latest
         imagePullPolicy: Always

@@ -9,7 +9,7 @@ spec:
   rules:
     - http:
         paths:
-          - path: /demo
+          - path: /
             backend:
               serviceName: test-app
-              servicePort: 8100
+              servicePort: 8080
