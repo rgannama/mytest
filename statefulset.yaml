@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: test-app
+spec:
+  serviceName: test-app
+  replicas: 2
+  selector:
+    matchLabels:
+      app: test-app
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      containers:
+      - name: test-app
+        image: test-app-image:latest
+        imagePullPolicy: Never
+        readinessProbe:
+          httpGet:
+            path: /demo/actuator/health
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /demo/actuator/info
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 15
+        volumeMounts:
+          - name: pv
+            mountPath: /testapp/data
+  volumeClaimTemplates:
+    - metadata:
+        name: pv
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 50Mi

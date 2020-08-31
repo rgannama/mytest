@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-app
+  labels:
+    app: test-app
+spec:
+  selector:
+    matchLabels:
+      app: test-app
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      containers:
+      - name: test-app
+        image: test-app-image:latest
+        imagePullPolicy: Never
+        readinessProbe:
+          httpGet:
+            path: /demo/actuator/health
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /demo/actuator/info
+            port: 8100
+            scheme: HTTP
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 15
+        volumeMounts:
+          - name: test-app-storage
+            mountPath: /testapp/data
+          - name: config-volume
+            mountPath: /config/
+      volumes:
+        - name: test-app-storage
+          persistentVolumeClaim:
+            claimName: test-app-pvc
+        - name: config-volume
+          configMap:
+            name: test-app-config
